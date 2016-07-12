@@ -14,13 +14,15 @@
     <influxdb-query id="query" 
       query="SHOW MEASUREMENTS" 
       connection="[[connection]]"
-      regex="/(.*?)\..*$/" 
-      response="{{wellNames}}"></influxdb-query>
+      response="{{wellNames}}" ></influxdb-query>
+      
 
+  <!--regex="/(.*?)\..*$/" -->
+  
       <button id="execute">Execute</button>
-
       <pre>[[JSONstringify(wellNames)]]</pre>
   </template>
+
 
   <script>
     Polymer({
