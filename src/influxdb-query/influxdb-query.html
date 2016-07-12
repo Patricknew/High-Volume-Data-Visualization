@@ -1,0 +1,50 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<dom-module id="influxdb-query">
+<template>
+	<style type="text/css">
+		
+	</style>
+  
+	<iron-ajax
+		 id='ajax'
+		 url$="[[connection.url]]"
+		 params$='{"q":"[[query]]", "db":"[[connection.db]]"}'
+		 handle-as="json"
+		 last-response="{{response}}"></iron-ajax>
+	
+</template>
+<script>
+
+    Polymer({
+
+      is: 'influxdb-query',
+			authToken: function() {
+				return 'Basic ' +
+						btoa(this.connection.user + 
+						':' +
+						this.connection.password)
+			},
+      properties: {
+      	query: String, // query to execute
+      	connection: Object, // connection object from influxdb-connection component
+      	regex: String,
+      	distinct : { 
+      		type: Boolean,
+      		value: true,
+      	},
+      	response: { // response object
+					type: Object,
+					notify: true,
+					readonly: true,
+				}      
+			},
+
+			handleQuery: function(){
+				this.$.ajax.headers.Authorization = this.authToken()
+				this.$.ajax.generateRequest()
+			}	
+    });
+
+  </script>
+</dom-module>

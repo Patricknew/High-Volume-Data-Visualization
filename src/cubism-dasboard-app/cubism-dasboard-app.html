@@ -1,0 +1,50 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../influxdb-connection/influxdb-connection.html">
+<link rel="import" href="../influxdb-query/influxdb-query.html">
+<link rel="import" href="../cubism-chart/cubism-chart.html">
+<dom-module id="cubism-dasboard-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <influxdb-connection connection="{{connection}}"></influxdb-connection>
+    <br/>
+    <influxdb-query id="query" 
+      query="SHOW MEASUREMENTS" 
+      connection="[[connection]]"
+      regex="/(.*?)\..*$/" 
+      response="{{wellNames}}"></influxdb-query>
+
+      <button id="execute">Execute</button>
+
+      <pre>[[JSONstringify(wellNames)]]</pre>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'cubism-dasboard-app',
+      
+      listeners:{
+        'execute.click':'executeClick'
+      },
+      
+      properties: {
+        prop1: {
+          type: String,
+          value: 'cubism-dasboard-app',
+        },
+      },
+      
+      JSONstringify: function(conn){
+        return JSON.stringify(conn, null, 2);
+      },
+
+      executeClick(){
+        this.$.query.handleQuery()
+      },
+
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,45 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-input/iron-input.html">
+<dom-module id="influxdb-connection">
+<template>
+	<style type="text/css">
+		
+	</style>
+  <label for="url">Url:</label>
+	<input is="iron-input" bind-value="{{connection.url}}" name="url">
+  <br>
+  <label for="user">User:</label>
+	<input is="iron-input" bind-value="{{connection.user}}" name="user">
+  <br>
+  <label for="pass">Password:</label>
+	<input type="password" is="iron-input" bind-value="{{connection.password}}" name="password">
+  <br>
+  <label for="db">Db:</label>
+	<input is="iron-input" bind-value="{{connection.db}}" name="db">
+	
+</template>
+<script>
+
+    Polymer({
+
+      is: 'influxdb-connection',
+
+      properties: {
+      	connection: {
+          type: Object,
+          readOnly: true,
+          notify: true,
+          value: function() {
+            return {
+              url:'http://localhost:8086/query',
+              user:'root',
+              password:'root',
+              db:'hfdata_samples'
+            }
+          }
+        }
+      },
+    });
+
+  </script>
+</dom-module>
