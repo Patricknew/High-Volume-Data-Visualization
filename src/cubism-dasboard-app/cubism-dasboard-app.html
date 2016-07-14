@@ -2,6 +2,8 @@
 <link rel="import" href="../influxdb-connection/influxdb-connection.html">
 <link rel="import" href="../influxdb-query/influxdb-query.html">
 <link rel="import" href="../cubism-chart/cubism-chart.html">
+<link rel="import" href="../well-names/well-names.html">
+<link rel="import" href="../../bower_components/iron-input/iron-input.html">
 <dom-module id="cubism-dasboard-app">
   <template>
     <style>
@@ -11,16 +13,19 @@
     </style>
     <influxdb-connection connection="{{connection}}"></influxdb-connection>
     <br/>
-    <influxdb-query id="query" 
-      query="SHOW MEASUREMENTS" 
+    <label for="queryInput">Query:</label>
+    <!--<input is="iron-input" bind-value="{{query}}" name="queryInput" value="SHOW MEASUREMENTS" size="60">-->
+    <br/>
+    <!--<influxdb-query id="query" 
+      query="[[query]]" 
       connection="[[connection]]"
-      response="{{wellNames}}" ></influxdb-query>
-      
-
-  <!--regex="/(.*?)\..*$/" -->
+      response="{{queryResponse}}" ></influxdb-query>-->
   
+      
       <button id="execute">Execute</button>
-      <pre>[[JSONstringify(wellNames)]]</pre>
+      <well-names id="wellNames" connection="[[connection]]" result="{{wellNames}}">
+
+      </well-names>
   </template>
 
 
@@ -44,7 +49,8 @@
       },
 
       executeClick(){
-        this.$.query.handleQuery()
+        //this.$.query.handleQuery()
+        this.$.wellNames.handleQuery()
       },
 
     });

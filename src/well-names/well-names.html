@@ -1,0 +1,46 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../influxdb-query/influxdb-query.html">
+
+<dom-module id="well-names">
+<template>
+    <influxdb-query id="query1" 
+      query="SHOW MEASUREMENTS" 
+      connection="[[connection]]"
+      response="{{queryResult}}"></influxdb-query>
+    <div class="dropdown-content">
+        <template is="dom-repeat" id="wellNamesList" items="[[getResults(queryResult)]]">
+            <div><input type="checkbox"/>[[item]]</div>
+        </template>
+    </div>
+</template>
+<script>
+    Polymer({
+        is: 'well-names',
+        properties: {
+            connection: Object,
+            result: {
+                type: Object,
+                notify: true,
+                readonly: true,
+            }
+        },
+        arrayItem: function(change, index, path) {
+            // this.get(path, root) returns a value for a path
+            // relative to a root object.
+            return this.get(path, change.base[index]);
+        },
+        getResults: function(r){
+            var re = /(.*?)\..*$/
+            return r.results[0].series[0].values.map(function(elem){
+                return elem[0].replace(re, '$1')
+            }).reduce(function(a,b){
+                if (a.indexOf(b) < 0 ) a.push(b);
+                return a;
+            },[])
+        },
+        handleQuery: function(){
+            this.$.query1.handleQuery()
+        }
+    })
+</script>
+</dom-module>    

@@ -9,7 +9,6 @@
 	<iron-ajax
 		 id='ajax'
 		 url$="[[connection.url]]"
-		 params$='{"q":"[[query]]", "db":"[[connection.db]]"}'
 		 handle-as="json"
 		 last-response="{{response}}"></iron-ajax>
 	
@@ -37,9 +36,11 @@
 
 			handleQuery: function(){
 				this.$.ajax.headers.Authorization = this.authToken()
+				this.$.ajax.params.q=this.query
+				this.$.ajax.params.db = this.connection.db
 				this.$.ajax.generateRequest()
 			}	
-    });
+    })
 
   </script>
 </dom-module>
