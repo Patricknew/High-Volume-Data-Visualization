@@ -18,12 +18,14 @@
     Polymer({
 
       is: 'influxdb-query',
+			
 			authToken: function() {
 				return 'Basic ' +
 						btoa(this.connection.user + 
 						':' +
 						this.connection.password)
 			},
+
       properties: {
       	query: String, // query to execute
       	connection: Object, // connection object from influxdb-connection component

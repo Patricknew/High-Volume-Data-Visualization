@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../influxdb-connection/influxdb-connection.html">
 <link rel="import" href="../influxdb-query/influxdb-query.html">
@@ -15,25 +16,17 @@
     </style>
     
     <iron-localstorage name="cubism-connection" value="{{connection}}"
-        on-iron-localstorage-load-empty="initializeConnection">
-
-    </iron-localstorage>
+        on-iron-localstorage-load-empty="initializeConnection"></iron-localstorage>
     
     <influxdb-connection connection="{{connection}}"></influxdb-connection>
     <br/>
-    <label for="queryInput">Query:</label>
-    <!--<input is="iron-input" bind-value="{{query}}" name="queryInput" value="SHOW MEASUREMENTS" size="60">-->
+   
     <br/>
-    <!--<influxdb-query id="query" 
-      query="[[query]]" 
-      connection="[[connection]]"
-      response="{{queryResponse}}" ></influxdb-query>-->
-  
-      
-      <button id="execute">Execute</button>
-      <well-names id="wellNames" connection="[[connection]]" result="{{wellNames}}">
-
-      </well-names>
+    <paper-button id="execute" raised>Show Wells</paper-button>
+    <well-names id="wellNames" connection="[[connection]]" result="{{wellNames}}"></well-names>
+    <br/>
+    <br/>
+    <cubism-chart></cubism-chart>
   </template>
 
 
