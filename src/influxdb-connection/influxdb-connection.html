@@ -27,15 +27,9 @@
       properties: {
       	connection: {
           type: Object,
-          readOnly: true,
           notify: true,
           value: function() {
-            return {
-              url:'http://localhost:8086/query',
-              user:'root',
-              password:'root',
-              db:'hfdata_samples'
-            }
+            return {}
           }
         }
       },

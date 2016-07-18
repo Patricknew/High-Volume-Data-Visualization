@@ -1,8 +1,10 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../influxdb-connection/influxdb-connection.html">
 <link rel="import" href="../influxdb-query/influxdb-query.html">
 <link rel="import" href="../cubism-chart/cubism-chart.html">
 <link rel="import" href="../well-names/well-names.html">
+
 <link rel="import" href="../../bower_components/iron-input/iron-input.html">
 <dom-module id="cubism-dasboard-app">
   <template>
@@ -11,6 +13,12 @@
         display: block;
       }
     </style>
+    
+    <iron-localstorage name="cubism-connection" value="{{connection}}"
+        on-iron-localstorage-load-empty="initializeConnection">
+
+    </iron-localstorage>
+    
     <influxdb-connection connection="{{connection}}"></influxdb-connection>
     <br/>
     <label for="queryInput">Query:</label>
@@ -43,7 +51,14 @@
           value: 'cubism-dasboard-app',
         },
       },
-      
+      initializeConnection: function() {
+      this.connection = {
+          url:'http://localhost:8086/query',
+          user:'root',
+          password:'root',
+          db:'hfdata_samples'
+      }
+    },
       JSONstringify: function(conn){
         return JSON.stringify(conn, null, 2);
       },

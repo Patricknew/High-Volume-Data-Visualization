@@ -6,7 +6,8 @@
     "polymer": "Polymer/polymer#^1.4.0",
     "iron-input": "PolymerElements/iron-input#^1.0.10",
     "iron-ajax": "PolymerElements/iron-ajax#^1.2.1",
-    "iron-dropdown": "PolymerElements/iron-dropdown#^1.4.1"
+    "iron-dropdown": "PolymerElements/iron-dropdown#^1.4.1",
+    "iron-localstorage": "PolymerElements/iron-localstorage#^1.0.6"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
