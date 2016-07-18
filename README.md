@@ -1,4 +1,4 @@
-# \<cubism-dasboard\>
+# <cubism-dasboard>
 
 display time series data with cubism
 
