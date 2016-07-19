@@ -1,4 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../influxdb-query/influxdb-query.html">
 
 <dom-module id="well-names">
@@ -7,11 +10,25 @@
       query="SHOW MEASUREMENTS" 
       connection="[[connection]]"
       response="{{queryResult}}"></influxdb-query>
-    <div class="dropdown-content">
+<!--     <div class="dropdown-content">
         <template is="dom-repeat" id="wellNamesList" items="[[getResults(queryResult)]]">
             <div><input type="checkbox"/>[[item]]</div>
         </template>
     </div>
+ -->
+<!-- Patrick's checkbox within dropdown menu -->
+    <div class="dropdown with checkbox">
+        <!-- <template is="dom-repeat" id="wellNamesList" items="[[getResults(queryResult)]]"> -->
+            <paper-dropdown-menu label="Well Names">
+                <paper-listbox class="dropdown-content">
+                    <template is="dom-repeat" id="wellNamesList" items="[[getResults(queryResult)]]">
+                        <paper-checkbox>[[item]]</paper-checkbox>
+                    </template>
+                </paper-listbox>
+            </paper-dropdown-menu>
+        <!-- </template> -->
+    </div>
+    
 </template>
 <script>
     Polymer({
