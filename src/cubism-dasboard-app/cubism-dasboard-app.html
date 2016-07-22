@@ -5,6 +5,7 @@
 <link rel="import" href="../influxdb-query/influxdb-query.html">
 <link rel="import" href="../cubism-chart/cubism-chart.html">
 <link rel="import" href="../well-names/well-names.html">
+<link rel="import" href="../checkbox-list/checkbox-list.html">
 
 <link rel="import" href="../../bower_components/iron-input/iron-input.html">
 <dom-module id="cubism-dasboard-app">
@@ -23,7 +24,9 @@
    
     <br/>
     <paper-button id="execute" raised>Show Wells</paper-button>
-    <well-names id="wellNames" connection="[[connection]]" result="{{wellNames}}"></well-names>
+    <well-names id="wellNames" connection="[[connection]]" result="{{wellNames}}"></well-names> 
+    
+    [[wellNames]]
     <br/>
     <br/>
     <cubism-chart></cubism-chart>
