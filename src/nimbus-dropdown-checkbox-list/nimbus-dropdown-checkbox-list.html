@@ -1,8 +1,10 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../nimbus-checkbox-list/nimbus-checkbox-list.html">
 
-<dom-module id="checkbox-list">
+<dom-module id="nimbus-dropdown-checkbox-list">
 <template>
     <style>
         paper-dropdown-menu.custom {
@@ -24,35 +26,29 @@
             };
         }
 
-        paper-checkbox {
-            display: block;
-            margin-right: 24px;
-        }
-    </style>
-
-   
+    </style>  
 
 <!-- Patrick's checkbox within dropdown menu -->
-<!--     <div class="dropdown with checkbox">
-
-                <paper-listbox multi class="dropdown-content" on-iron-select="_itemSelected">
-                    <template is="dom-repeat" id="wellNamesList" items="[[items]]">
-                        <paper-checkbox on-change='handleCheck' value="[[item]]">[[item]]</paper-checkbox>
-                    </template>
-                </paper-listbox>
-    </div> -->
-    <div class="checkbox">
+    <div class="dropdown with checkbox">
+        <paper-dropdown-menu label="dropdown-checkbox">
+<!--             <paper-listbox multi class="dropdown-content" > -->
+            <paper-item>test</paper-item>
+            <nimbus-checkbox-list items="[[getResults(queryResult)]]" selected-items="{{result}}"></nimbus-checkbox-list>
+<!--         </paper-listbox> -->
+        </paper-dropdown-menu>
+    </div>
+<!--     <div class="dropdown-checkbox">
         <paper-listbox multi class="dropdown-content" >
             <template is="dom-repeat" id="wellNamesList" items="[[items]]">
                 <paper-checkbox on-change="handleCheck" value="[[item]]">[[item]]</paper-checkbox>
             </template>
         </paper-listbox>
-    </div>
+    </div> -->
 
 </template>
 <script>
     Polymer({
-        is: 'checkbox-list',
+        is: 'nimbus-dropdown-checkbox-list',
         properties: {
             items:{
                 type: Array
@@ -66,12 +62,12 @@
                 }
             }
         },
-        // _itemSelected: function(e){
-        //     var selectedItem = e.target.selectedItems;
-        //     if (selectedItem){
-        //         console.log("selected: " + selectedItem.outerHTML);
-        //     }
-        // },
+        _itemSelected: function(e){
+            var selectedItem = e.target.selectedItems;
+            if (selectedItem){
+                console.log("selected: " + selectedItem.outerHTML);
+            }
+        },
         handleCheck: function(event){
             if(event.target.checked){
                 this.selectedItems = this.selectedItems.concat(event.target.value)

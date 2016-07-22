@@ -1,0 +1,58 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+
+<dom-module id="nimbus-checkbox-list">
+<template>
+    <style>
+        paper-checkbox {
+            display: block;
+            margin-right: 24px;
+        }
+    </style>
+
+<!--     <div class="checkbox"> -->
+        <paper-listbox multi class="content" >
+            <paper-item>test2</paper-item>
+            <template is="dom-repeat" id="wellNamesList" items="[[items]]">
+                <paper-checkbox on-change="handleCheck" value="[[item]]">[[item]]</paper-checkbox>
+            </template>
+        </paper-listbox>
+<!--     </div> -->
+
+</template>
+<script>
+    Polymer({
+        is: 'nimbus-checkbox-list',
+        properties: {
+            items:{
+                type: Array
+            },
+            selectedItems: {
+                type: Array,
+                notify: true,
+                readonly: true,
+                value : function(){
+                    return [];
+                }
+            }
+        },
+        // _itemSelected: function(e){
+        //     var selectedItem = e.target.selectedItems;
+        //     if (selectedItem){
+        //         console.log("selected: " + selectedItem.outerHTML);
+        //     }
+        // },
+        handleCheck: function(event){
+            if(event.target.checked){
+                this.selectedItems = this.selectedItems.concat(event.target.value)
+            }   else {
+                this.selectedItems.splice(this.selectedItems.indexOf(event.target.value),1)
+                this.selectedItems = [].concat(this.selectedItems)
+            }  
+        },
+      
+    })
+
+</script>
+</dom-module>    

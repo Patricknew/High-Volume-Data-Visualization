@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../influxdb-query/influxdb-query.html">
-<link rel="import" href="../checkbox-list/checkbox-list.html">
+<link rel="import" href="../nimbus-checkbox-list/nimbus-checkbox-list.html">
+<link rel="import" href="../nimbus-dropdown-checkbox-list/nimbus-dropdown-checkbox-list.html">
 
 <dom-module id="well-names">
 <template>
@@ -10,8 +11,9 @@
       connection="[[connection]]"
       response="{{queryResult}}"></influxdb-query>
 
-    <checkbox-list items="[[getResults(queryResult)]]" selected-items="{{result}}"></checkbox-list>
-    
+<!--     <nimbus-checkbox-list items="[[getResults(queryResult)]]" selected-items="{{result}}"></nimbus-checkbox-list> -->
+    <nimbus-dropdown-checkbox-list items="[[getResults(queryResult)]]" selected-items="{{result}}"></nimbus-checkbox-list>></nimbus-dropdown-checkbox-list>
+    <p>a</p>
 </template>
 <script>
     Polymer({
