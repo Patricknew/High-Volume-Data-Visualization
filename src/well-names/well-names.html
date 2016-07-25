@@ -11,9 +11,8 @@
       connection="[[connection]]"
       response="{{queryResult}}"></influxdb-query>
 
-<!--     <nimbus-checkbox-list items="[[getResults(queryResult)]]" selected-items="{{result}}"></nimbus-checkbox-list> -->
-    <nimbus-dropdown-checkbox-list items="[[getResults(queryResult)]]" selected-items="{{result}}"></nimbus-checkbox-list>></nimbus-dropdown-checkbox-list>
-    <p>a</p>
+    <nimbus-dropdown-checkbox-list items="[[getResults(queryResult)]]" result="{{result}}"></nimbus-dropdown-checkbox-list>
+
 </template>
 <script>
     Polymer({
