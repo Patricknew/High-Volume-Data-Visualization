@@ -3,11 +3,11 @@
 <link rel="import" href="../nimbus-checkbox-list/nimbus-checkbox-list.html">
 <link rel="import" href="../nimbus-dropdown-checkbox-list/nimbus-dropdown-checkbox-list.html">
 
-<dom-module id="well-names">
+<dom-module id="nimbus-influxdb-filter">
 <template>
 
     <influxdb-query id="query1" 
-      query="SHOW MEASUREMENTS" 
+      query="[[query]]" 
       connection="[[connection]]"
       response="{{queryResult}}"></influxdb-query>
 
@@ -16,9 +16,11 @@
 </template>
 <script>
     Polymer({
-        is: 'well-names',
+        is: 'nimbus-influxdb-filter',
         properties: {
             connection: Object,
+            query: String,
+            regex: Object,
             result: {
                 type: Object,
                 notify: true,
@@ -27,7 +29,9 @@
         },
 
         getResults: function(r){
-            var re = /(.*?)\..*$/
+            // var re = /(.*?)\..*$/
+            var re = eval(this.regex);
+            // console.log(eval(re));
             return r.results[0].series[0].values.map(function(elem){
                 return elem[0].replace(re, '$1')
             }).reduce(function(a,b){

@@ -4,7 +4,8 @@
 <link rel="import" href="../influxdb-connection/influxdb-connection.html">
 <link rel="import" href="../influxdb-query/influxdb-query.html">
 <link rel="import" href="../cubism-chart/cubism-chart.html">
-<link rel="import" href="../well-names/well-names.html">
+<!-- <link rel="import" href="../well-names/well-names.html"> -->
+<link rel="import" href="../nimbus-influxdb-filter/nimbus-influxdb-filter.html">
 
 <dom-module id="cubism-dasboard-app">
   <template>
@@ -22,11 +23,16 @@
    
     <br/>
     <paper-button id="execute" raised>Show Wells</paper-button>
-    <well-names id="wellNames" connection="[[connection]]" result="{{wellNames}}"></well-names> 
-    
+    <!-- <well-names id="wellNames" connection="[[connection]]" result="{{wellNames}}"></well-names>  -->
+    <nimbus-influxdb-filter id="wellNames" connection="[[connection]]" result="{{wellNames}}"
+     query='SHOW MEASUREMENTS' regex=/(.*?)\..*$/></nimbus-influxdb-filter>
     [[wellNames]]
     <br/>
-    [[result]]
+    <br/>
+    <paper-button id="showMeasurements" raised>Show Measurements</paper-button>
+    <nimbus-influxdb-filter id="measurementNames" connection="[[connection]]" result="{{measurementNames}}"
+     query='SHOW MEASUREMENTS WITH MEASUREMENT =~ /(W631-ESP-PO)\./' regex=/.*\.(.*$)/></nimbus-influxdb-filter>
+     [[measurementNames]]
     <br/>
     <br/>
     <cubism-chart></cubism-chart>
@@ -38,7 +44,8 @@
       is: 'cubism-dasboard-app',
       
       listeners:{
-        'execute.click':'executeClick'
+        'execute.click':'executeClick',
+        'showMeasurements.click': 'measurementClick'
       },
       
       properties: {
@@ -62,6 +69,9 @@
       executeClick: function(){
         //this.$.query.handleQuery()
         this.$.wellNames.handleQuery()
+      },
+      measurementClick: function(){
+        this.$.measurementNames.handleQuery()
       }
 
     });
