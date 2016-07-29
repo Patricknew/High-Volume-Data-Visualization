@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <script src="../../bower_components/d3/d3.min.js"></script>
 <script src="../../bower_components/cubism/cubism.v1.js"></script>
 <dom-module id="cubism-chart">
@@ -6,8 +7,11 @@
 	<style type="text/css">
 		
 	</style>
-  
-  <div id="example1"></div>
+
+  <div id="example1">
+    <paper-button id="showCubism" raised>Show Cubism</paper-button>
+    [[wells]]
+  </div>
   <script>
     function random(name) {
       var value = 0,
@@ -59,11 +63,24 @@
     Polymer({
 
       is: 'cubism-chart',
-      
-      properties: {
-      	data: Object
-      }
 
+      listeners:{
+        'showCubism.click': 'cubismClick',
+      },
+
+      properties: {
+      	data: {
+          type: Object,
+        },
+        wells: {
+          type: Array
+        }
+      },
+
+      cubismClick: function(){
+        var wells=this.wells;
+        console.log(wells);
+      }
     });
 
   </script>
