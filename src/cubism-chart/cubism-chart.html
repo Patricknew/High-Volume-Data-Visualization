@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../influxdb-query/influxdb-query.html">
 <script src="../../bower_components/d3/d3.min.js"></script>
 <script src="../../bower_components/cubism/cubism.v1.js"></script>
 <dom-module id="cubism-chart">
@@ -9,52 +10,81 @@
 	</style>
 
   <div id="example1">
+    <!-- query="SELECT mean( &quot;value&quot;) FROM /^W631-ESP-PO\.(Average_Amps)$/ WHERE time > now() - 1m GROUP BY time(20s)"  -->
+    <influxdb-query 
+    id = "query2"
+    query="SELECT mean( &quot;value&quot;) FROM /^W631-ESP-PO\.(Average_Amps)$/ WHERE time > now() - 1m GROUP BY time(20s)"
+    connection="[[connection]]"
+    response="{{queryResult}}"></influxdb-query>
+
     <paper-button id="showCubism" raised>Show Cubism</paper-button>
-    [[wells]]
+<!--     [[wells]]
+    [[measurements]] -->
+
   </div>
   <script>
-    function random(name) {
-      var value = 0,
-          values = [],
-          i = 0,
-          last;
-      return context.metric(function(start, stop, step, callback) {
-        start = +start, stop = +stop;
-        if (isNaN(last)) last = start;
-        while (last < stop) {
-          last += step;
-          value = Math.max(-10, Math.min(10, value + .8 * Math.random() - .4 + .2 * Math.cos(i += .2)));
-          values.push(value);
-        }
-        callback(null, values = values.slice((start - stop) / step));
-      }, name);
-    }
+    // //Generate Random Data
+    // function random(name) {
+    //   var value = 0,
+    //       values = [],
+    //       i = 0,
+    //       last;
+    //   return context.metric(function(start, stop, step, callback) {
+    //     start = +start, stop = +stop;
+    //     if (isNaN(last)) last = start;
+    //     while (last < stop) {
+    //       last += step;
+    //       value = Math.max(-10, Math.min(10, value + .8 * Math.random() - .4 + .2 * Math.cos(i += .2)));
+    //       values.push(value);
+    //     }
+    //     callback(null, values = values.slice((start - stop) / step));
+    //   }, name);
+    // }
+
+    // var context = cubism.context()
+    //     .serverDelay(0)
+    //     .clientDelay(0)
+    //     .step(1e3)
+    //     .size(960);
+
+
+    // // Random Data
+    // var foo = random("foo"),
+    // bar = random("bar");
+    // console.log(foo);
+    // d3.select("#example1").call(function(div) {
+
+    //   div.append("div")
+    //       .attr("class", "axis")
+    //       .call(context.axis().orient("top"));
+
+    //   div.selectAll(".horizon")
+    //       .data([foo, bar, foo.add(bar), foo.subtract(bar)])
+    //     .enter().append("div")
+    //       .attr("class", "horizon")
+    //       .call(context.horizon().extent([-20, 20]));
+
+    //   div.append("div")
+    //       .attr("class", "rule")
+    //       .call(context.rule());
+
+    // });
+
     
     var context = cubism.context()
         .serverDelay(0)
         .clientDelay(0)
         .step(1e3)
         .size(960);
-    var foo = random("foo"),
-    bar = random("bar");
+    // var url = "http://192.168.99.100:8086/query?db=hfdata_samples&q=SELECT mean(\"value\") FROM /^W631-ESP-PO\.(Average_Amps)$/ WHERE time > now() - 1m GROUP BY time(20s)";
+    var horizon = context.horizon();
+    // var url = "[[connection.url]]" + "?db=hfdata_samples&q=SELECT mean(\"value\") FROM /^W631-ESP-PO\.(Average_Amps)$/ WHERE time > now() - 1m GROUP BY time(20s)";
+    // var graphite = context.graphite(url);
+    // console.log(url);
+    // var foo = graphite.metric("(foo.*)").alias("Foo");
+    var foo = [[getResults(queryResult)]];
 
-    d3.select("#example1").call(function(div) {
-
-      div.append("div")
-          .attr("class", "axis")
-          .call(context.axis().orient("top"));
-
-      div.selectAll(".horizon")
-          .data([foo, bar, foo.add(bar), foo.subtract(bar)])
-        .enter().append("div")
-          .attr("class", "horizon")
-          .call(context.horizon().extent([-20, 20]));
-
-      div.append("div")
-          .attr("class", "rule")
-          .call(context.rule());
-
-    });
+    d3.selectAll(".horizon").data([foo]).enter().append("div").attr("class","horizon").call(context.horizon().extent([-20,20]));
 
   </script>
 </template>
@@ -69,19 +99,41 @@
       },
 
       properties: {
+        connection: {
+          type: Object,
+        },
       	data: {
           type: Object,
         },
         wells: {
-          type: Array
+          type: Array,
+        },
+        measurements:{
+          type: Array,
         }
       },
 
+      getResults: function(r){
+          var re = /(.*?)\..*$/
+          // var re = eval(this.regex);
+          // console.log(eval(re));
+          return r.results[0].series[0].values.map(function(elem){
+              return elem[0].replace(re, '$1')
+          }).reduce(function(a,b){
+              if (a.indexOf(b) < 0 ) a.push(b);
+              return a;
+          },[])
+      },
+      handleQuery: function(){
+          this.$.query2.handleQuery()
+      },
       cubismClick: function(){
         var wells=this.wells;
+        var url=this.connection.url;
         console.log(wells);
+        console.log(url);
       }
     });
-
+        
   </script>
 </dom-module>

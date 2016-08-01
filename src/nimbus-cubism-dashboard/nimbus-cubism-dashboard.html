@@ -16,7 +16,7 @@
     
     <iron-localstorage name="cubism-connection" value="{{connection}}"
         on-iron-localstorage-load-empty="initializeConnection"></iron-localstorage>
-    
+
     <influxdb-connection connection="{{connection}}"></influxdb-connection>
     <br/>
    
@@ -35,7 +35,7 @@
     <br/>
     <br/>
 <!--     <paper-button id="showCubism" raised>Show Cubism</paper-button> -->
-    <cubism-chart wells="[[selectedWells]]"></cubism-chart>
+    <cubism-chart wells="[[selectedWells]]" measurements="[[measurementNames]]" connection="[[connection]]" query='SHOW MEASUREMENTS'></cubism-chart>
   </template>
 
 
@@ -57,7 +57,7 @@
       },
       initializeConnection: function() {
       this.connection = {
-          url:'http://localhost:8086/query',
+          url:'http://192.168.99.100:8086/query',
           user:'root',
           password:'root',
           db:'hfdata_samples'
