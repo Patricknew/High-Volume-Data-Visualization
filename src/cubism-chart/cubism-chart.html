@@ -10,19 +10,23 @@
 	</style>
 
   <div id="example1">
-    <!-- query="SELECT mean( &quot;value&quot;) FROM /^W631-ESP-PO\.(Average_Amps)$/ WHERE time > now() - 1m GROUP BY time(20s)"  -->
     <influxdb-query 
     id = "query2"
-    query="SELECT mean( &quot;value&quot;) FROM /^W631-ESP-PO\.(Average_Amps)$/ WHERE time > now() - 1m GROUP BY time(20s)"
+    query="select value from &quot;W631-ESP-PO.Average_Amps&quot; where time > now() - 1h order by time desc"
     connection="[[connection]]"
     response="{{queryResult}}"></influxdb-query>
 
     <paper-button id="showCubism" raised>Show Cubism</paper-button>
 <!--     [[wells]]
     [[measurements]] -->
-
+<!-- [[queryResult]] -->
   </div>
   <script>
+  if ("[[queryResult]]" == ""){
+    console.log("empty");
+  } else {
+    console.log("[[queryResult]]");
+  }
     // //Generate Random Data
     // function random(name) {
     //   var value = 0,
@@ -70,22 +74,44 @@
 
     // });
 
-    
+
+    // // var url = "[[connection.url]]" + "?db=hfdata_samples&q=SELECT mean(\"value\") FROM /^W631-ESP-PO\.(Average_Amps)$/ WHERE time > now() - 1m GROUP BY time(20s)";
+    // // var graphite = context.graphite(url);
+    // // console.log(url);
+    // // var foo = graphite.metric("(foo.*)").alias("Foo");
+    // var foo = "[[queryResult]]";
+
+    // d3.selectAll(".horizon").data([foo]).enter().append("div").attr("class","horizon").call(context.horizon().extent([-20,20]));
+
     var context = cubism.context()
-        .serverDelay(0)
-        .clientDelay(0)
-        .step(1e3)
-        .size(960);
-    // var url = "http://192.168.99.100:8086/query?db=hfdata_samples&q=SELECT mean(\"value\") FROM /^W631-ESP-PO\.(Average_Amps)$/ WHERE time > now() - 1m GROUP BY time(20s)";
-    var horizon = context.horizon();
-    // var url = "[[connection.url]]" + "?db=hfdata_samples&q=SELECT mean(\"value\") FROM /^W631-ESP-PO\.(Average_Amps)$/ WHERE time > now() - 1m GROUP BY time(20s)";
-    // var graphite = context.graphite(url);
-    // console.log(url);
-    // var foo = graphite.metric("(foo.*)").alias("Foo");
-    var foo = [[getResults(queryResult)]];
+        .serverDelay(15 * 1000) // allow 15 seconds of collection lag
+        .step(15000) // fifteen seconds per value
+        .size(1440); // fetch 1440 values (720p)
+    var graphite = context.graphite("[[connection]]"); //ASK Boris how to add a source, eg: http://.....
+    // var api_metrics = [
+    //   graphite.metric("my.graphite.metric1").alias("test1"),
+    // ];
+    var data_metrics = [
+      graphite.metric("sum(").alias("my_test2"),
+    ];
+    var horizon = context.horizon().colors(["#08519c", "#*82bd", "#6baed6", "#fee6ce", "#fdae6b", "#e6550d" ]);
+    var horizon2 = context.horizon().colors(["#ddic77", "#c994c7", "#e7eief","#efedf5", "#bcbddc", "#756bb1" ]);
+    d3.select("example1").selectAll(".axis")
+        .data(["top", "bottom"])
+      .enter().append("div").attr("class", "fluid-row")
+        .attr("class", function(d) { return d + " axis"; })
+        .each(function(d) { d3.select(this).call(context.axis().ticks(12).orient(d)); });
+    d3.select("example1").append("div")
+        .attr("class", "rule")
+        .call(context.rule());
 
-    d3.selectAll(".horizon").data([foo]).enter().append("div").attr("class","horizon").call(context.horizon().extent([-20,20]));
-
+    d3.select("example1").selectAll(".horizon2")
+        .data(data_metrics)
+      .enter().insert("div", ".bottom")
+        .attr("class", "horizon").call(horizon2.extent([-1000, 1000]));
+    context.on("focus", function(i) {
+      d3.selectAll(".value").style("right", i == null ? null : context.size() - 1 - i + "px");
+    });
   </script>
 </template>
 <script>
@@ -110,20 +136,17 @@
         },
         measurements:{
           type: Array,
+        },
+        queryResult: {
+            type: Object,
+            notify: true,
+            readonly: true,
+            value : function(){
+                return [];
+            }
         }
       },
 
-      getResults: function(r){
-          var re = /(.*?)\..*$/
-          // var re = eval(this.regex);
-          // console.log(eval(re));
-          return r.results[0].series[0].values.map(function(elem){
-              return elem[0].replace(re, '$1')
-          }).reduce(function(a,b){
-              if (a.indexOf(b) < 0 ) a.push(b);
-              return a;
-          },[])
-      },
       handleQuery: function(){
           this.$.query2.handleQuery()
       },
