@@ -11,37 +11,37 @@
 		 url$="[[connection.url]]"
 		 handle-as="json"
 		 last-response="{{response}}"></iron-ajax>
-	
+
 </template>
 <script>
 
     Polymer({
 
-      is: 'influxdb-query',
+      	is: 'influxdb-query',
 			
-			authToken: function() {
-				return 'Basic ' +
-						btoa(this.connection.user + 
-						':' +
-						this.connection.password)
-			},
+		authToken: function() {
+			return 'Basic ' +
+					btoa(this.connection.user + 
+					':' +
+					this.connection.password)
+		},
 
-      properties: {
-      	query: String, // query to execute
-      	connection: Object, // connection object from influxdb-connection component
-      	response: { // response object
-					type: Object,
-					notify: true,
-					readonly: true,
-				}      
-			},
+	    properties: {
+	      	query: String, // query to execute
+	      	connection: Object, // connection object from influxdb-connection component
+	      	response: { // response object
+						type: Object,
+						notify: true,
+						readonly: true,
+			}      
+		},
 
-			handleQuery: function(){
-				this.$.ajax.headers.Authorization = this.authToken()
-				this.$.ajax.params.q=this.query
-				this.$.ajax.params.db = this.connection.db
-				this.$.ajax.generateRequest()
-			}	
+		handleQuery: function(){
+			this.$.ajax.headers.Authorization = this.authToken()
+			this.$.ajax.params.q=this.query
+			this.$.ajax.params.db = this.connection.db
+			return this.$.ajax.generateRequest()
+		}	
     })
 
   </script>

@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../influxdb-query/influxdb-query.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <script src="../../bower_components/d3/d3.min.js"></script>
 <script src="../../bower_components/cubism/cubism.v1.js"></script>
 <dom-module id="cubism-chart">
@@ -10,124 +11,78 @@
 	</style>
 
   <div id="example1">
+
     <influxdb-query 
-    id = "query2"
-    query="select value from &quot;W631-ESP-PO.Average_Amps&quot; where time > now() - 1h order by time desc"
-    connection="[[connection]]"
-    response="{{queryResult}}"></influxdb-query>
-
+      id = "query2"
+      
+      connection="[[connection]]"
+      ></influxdb-query>
+     
     <paper-button id="showCubism" raised>Show Cubism</paper-button>
-<!--     [[wells]]
-    [[measurements]] -->
-<!-- [[queryResult]] -->
+
   </div>
-  <script>
-  if ("[[queryResult]]" == ""){
-    console.log("empty");
-  } else {
-    console.log("[[queryResult]]");
-  }
-    // //Generate Random Data
-    // function random(name) {
-    //   var value = 0,
-    //       values = [],
-    //       i = 0,
-    //       last;
-    //   return context.metric(function(start, stop, step, callback) {
-    //     start = +start, stop = +stop;
-    //     if (isNaN(last)) last = start;
-    //     while (last < stop) {
-    //       last += step;
-    //       value = Math.max(-10, Math.min(10, value + .8 * Math.random() - .4 + .2 * Math.cos(i += .2)));
-    //       values.push(value);
-    //     }
-    //     callback(null, values = values.slice((start - stop) / step));
-    //   }, name);
-    // }
 
-    // var context = cubism.context()
-    //     .serverDelay(0)
-    //     .clientDelay(0)
-    //     .step(1e3)
-    //     .size(960);
-
-
-    // // Random Data
-    // var foo = random("foo"),
-    // bar = random("bar");
-    // console.log(foo);
-    // d3.select("#example1").call(function(div) {
-
-    //   div.append("div")
-    //       .attr("class", "axis")
-    //       .call(context.axis().orient("top"));
-
-    //   div.selectAll(".horizon")
-    //       .data([foo, bar, foo.add(bar), foo.subtract(bar)])
-    //     .enter().append("div")
-    //       .attr("class", "horizon")
-    //       .call(context.horizon().extent([-20, 20]));
-
-    //   div.append("div")
-    //       .attr("class", "rule")
-    //       .call(context.rule());
-
-    // });
-
-
-    // // var url = "[[connection.url]]" + "?db=hfdata_samples&q=SELECT mean(\"value\") FROM /^W631-ESP-PO\.(Average_Amps)$/ WHERE time > now() - 1m GROUP BY time(20s)";
-    // // var graphite = context.graphite(url);
-    // // console.log(url);
-    // // var foo = graphite.metric("(foo.*)").alias("Foo");
-    // var foo = "[[queryResult]]";
-
-    // d3.selectAll(".horizon").data([foo]).enter().append("div").attr("class","horizon").call(context.horizon().extent([-20,20]));
-
-    var context = cubism.context()
-        .serverDelay(15 * 1000) // allow 15 seconds of collection lag
-        .step(15000) // fifteen seconds per value
-        .size(1440); // fetch 1440 values (720p)
-    var graphite = context.graphite("[[connection]]"); //ASK Boris how to add a source, eg: http://.....
-    // var api_metrics = [
-    //   graphite.metric("my.graphite.metric1").alias("test1"),
-    // ];
-    var data_metrics = [
-      graphite.metric("sum(").alias("my_test2"),
-    ];
-    var horizon = context.horizon().colors(["#08519c", "#*82bd", "#6baed6", "#fee6ce", "#fdae6b", "#e6550d" ]);
-    var horizon2 = context.horizon().colors(["#ddic77", "#c994c7", "#e7eief","#efedf5", "#bcbddc", "#756bb1" ]);
-    d3.select("example1").selectAll(".axis")
-        .data(["top", "bottom"])
-      .enter().append("div").attr("class", "fluid-row")
-        .attr("class", function(d) { return d + " axis"; })
-        .each(function(d) { d3.select(this).call(context.axis().ticks(12).orient(d)); });
-    d3.select("example1").append("div")
-        .attr("class", "rule")
-        .call(context.rule());
-
-    d3.select("example1").selectAll(".horizon2")
-        .data(data_metrics)
-      .enter().insert("div", ".bottom")
-        .attr("class", "horizon").call(horizon2.extent([-1000, 1000]));
-    context.on("focus", function(i) {
-      d3.selectAll(".value").style("right", i == null ? null : context.size() - 1 - i + "px");
-    });
-  </script>
 </template>
 <script>
+    d3function = function(el) {
+      //Generate Random Data
+      function random(name) {
+        var value = 0,
+            values = [],
+            i = 0,
+            last;
+        return context.metric(function(start, stop, step, callback) {
+          start = +start, stop = +stop;
+          if (isNaN(last)) last = start;
+          while (last < stop) {
+            last += step;
+            value = Math.max(-10, Math.min(10, value + .8 * Math.random() - .4 + .2 * Math.cos(i += .2)));
+            values.push(value);
+          }
+          callback(null, values = values.slice((start - stop) / step));
+        }, name);
+      }
+
+      var context = cubism.context()
+          .serverDelay(0)
+          .clientDelay(0)
+          .step(1e3)
+          .size(960);
+
+
+      // Random Data
+      var foo = random("foo"),
+      bar = random("bar");
+
+      d3.select(el).call(function(div) {
+
+        div.append("div")
+            .attr("class", "axis")
+            .call(context.axis().orient("top"));
+
+        div.selectAll(".horizon")
+            .data([foo, bar, foo.add(bar), foo.subtract(bar)])
+          .enter().append("div")
+            .attr("class", "horizon")
+            .call(context.horizon().extent([-20, 20]));
+
+        div.append("div")
+            .attr("class", "rule")
+            .call(context.rule());
+
+      });
+    },
 
     Polymer({
 
       is: 'cubism-chart',
 
       listeners:{
-        'showCubism.click': 'cubismClick',
+        'showCubism.click': 'handleQuery',
       },
 
       properties: {
-        connection: {
-          type: Object,
-        },
+        connection: Object,
       	data: {
           type: Object,
         },
@@ -137,24 +92,38 @@
         measurements:{
           type: Array,
         },
-        queryResult: {
+          response: { // response object
             type: Object,
             notify: true,
             readonly: true,
-            value : function(){
-                return [];
-            }
+      } , 
+        queryResult: {
+            type: Object,
         }
       },
 
-      handleQuery: function(){
-          this.$.query2.handleQuery()
+      ready: function(){
+        d3function(this.$.example1);
       },
-      cubismClick: function(){
-        var wells=this.wells;
-        var url=this.connection.url;
-        console.log(wells);
-        console.log(url);
+      fetchData: function(){
+        var queryRequest = this.$.fetch.generateRequest();
+
+        Promise.all([queryRequest.completes])
+        .then(function(requests){
+          var queryResult = requests[0].response;
+
+          console.log("queryResult");
+        })
+      },
+    
+      
+      handleQuery: function(){
+        this.$.query2.query = 'select value from "W631-ESP-PO.Average_Amps" where time > now() - 1h order by time desc'
+        this.$.query2.handleQuery().completes.then(function(data){
+          console.log(data.response)
+        })
+        
+
       }
     });
         
