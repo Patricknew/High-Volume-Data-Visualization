@@ -24,23 +24,23 @@
 <script>
 
     d3function = function(el) {
-      //Generate Random Data
-      function random(name) {
-        var value = 0,
-            values = [],
-            i = 0,
-            last;
-        return context.metric(function(start, stop, step, callback) {
-          start = +start, stop = +stop;
-          if (isNaN(last)) last = start;
-          while (last < stop) {
-            last += step;
-            value = Math.max(-10, Math.min(10, value + .8 * Math.random() - .4 + .2 * Math.cos(i += .2)));
-            values.push(value);
-          }
-          callback(null, values = values.slice((start - stop) / step));
-        }, name);
-      }
+      // //Generate Random Data
+      // function random(name) {
+      //   var value = 0,
+      //       values = [],
+      //       i = 0,
+      //       last;
+      //   return context.metric(function(start, stop, step, callback) {
+      //     start = +start, stop = +stop;
+      //     if (isNaN(last)) last = start;
+      //     while (last < stop) {
+      //       last += step;
+      //       value = Math.max(-10, Math.min(10, value + .8 * Math.random() - .4 + .2 * Math.cos(i += .2)));
+      //       values.push(value);
+      //     }
+      //     callback(null, values = values.slice((start - stop) / step));
+      //   }, name);
+      // }
 
       var context = cubism.context()
           .serverDelay(0)
@@ -48,29 +48,49 @@
           .step(1e3)
           .size(960);
 
+      var test = formatData();
 
-      // Random Data
-      var foo = random("foo"),
-      bar = random("bar");
-      console.log(foo);
-      // console.log(bar);
-      d3.select(el).call(function(div) {
+      function formatData(){
+        return context.metric(function(start, stop, step, callback){
+        //start time (a Date), stop time (another Date), step interval ( a number in milliseconds), callback
+          start = +start;
+          stop = +stop; //stop time (another Date)
+          var values = [];
+          while (start < stop) {
+            start += step;
+            values.push(this.queryResult.results[0].series[0].values[i][1]);
+          }
+          callback(null,values);
+        }, name);
+      };
 
-        div.append("div")
-            .attr("class", "axis")
-            .call(context.axis().orient("top"));
-
-        div.selectAll(".horizon")
-            .data([foo, bar])
-          .enter().append("div")
-            .attr("class", "horizon")
-            .call(context.horizon().extent([-20, 20]));
-
-        div.append("div")
-            .attr("class", "rule")
-            .call(context.rule());
-
+      d3.select(el).call(function(div){
+        div.append("div").attr("class", "axis").call(context.axis().orient("top"));
+        div.selectAll(".horizon").data([test]).enter().append("div").attr("class","comparison").call(context.horizon().height(60).title("W631-ESP-PO.Average_Amps"));
+        div.append("div").attr("class", "rule").call(context.rule());
       });
+      // Random Data
+      // var foo = random("foo"),
+      // bar = random("bar");
+      // console.log(foo);
+      // console.log(bar);
+    //   d3.select(el).call(function(div) {
+
+    //     div.append("div")
+    //         .attr("class", "axis")
+    //         .call(context.axis().orient("top"));
+
+    //     div.selectAll(".horizon")
+    //         .data([foo, bar])
+    //       .enter().append("div")
+    //         .attr("class", "horizon")
+    //         .call(context.horizon().extent([-20, 20]));
+
+    //     div.append("div")
+    //         .attr("class", "rule")
+    //         .call(context.rule());
+
+    //   });
     };
 
     Polymer({
@@ -101,6 +121,7 @@
       } , 
         queryResult: {
             type: Object,
+            value: function(){ return "{results: [{series: [{values: [0, 0]}]}]}"},
         }
       },
 
@@ -128,10 +149,10 @@
         this.$.query2.query = 'select value from "W631-ESP-PO.Average_Amps" where time > now() - 1h order by time desc'
         this.$.query2.handleQuery().completes.then(function(data){
           this.queryResult = data.response;
-          for (i=0; i<this.queryResult.results[0].series[0].values.length; i++){
-            console.log(this.queryResult.results[0].series[0].values[i]);
-        }
-          
+          // for (i=0; i<this.queryResult.results[0].series[0].values.length; i++){
+          //   console.log(this.queryResult.results[0].series[0].values[i]);
+          // }
+          console.log(this.queryResult);
         })
       },
     });
