@@ -1,7 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../influxdb-query/influxdb-query.html">
-<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <script src="../../bower_components/d3/d3.min.js"></script>
 <script src="../../bower_components/cubism/cubism.v1.js"></script>
 <dom-module id="cubism-chart">
@@ -14,7 +13,6 @@
 
     <influxdb-query 
       id = "query2"
-      
       connection="[[connection]]"
       ></influxdb-query>
      
@@ -24,6 +22,7 @@
 
 </template>
 <script>
+
     d3function = function(el) {
       //Generate Random Data
       function random(name) {
@@ -53,7 +52,8 @@
       // Random Data
       var foo = random("foo"),
       bar = random("bar");
-
+      console.log(foo);
+      // console.log(bar);
       d3.select(el).call(function(div) {
 
         div.append("div")
@@ -61,7 +61,7 @@
             .call(context.axis().orient("top"));
 
         div.selectAll(".horizon")
-            .data([foo, bar, foo.add(bar), foo.subtract(bar)])
+            .data([foo, bar])
           .enter().append("div")
             .attr("class", "horizon")
             .call(context.horizon().extent([-20, 20]));
@@ -71,18 +71,19 @@
             .call(context.rule());
 
       });
-    },
+    };
 
     Polymer({
 
       is: 'cubism-chart',
 
       listeners:{
-        'showCubism.click': 'handleQuery',
+        'showCubism.click': 'cubismClick',
       },
 
       properties: {
         connection: Object,
+        abc: Object,
       	data: {
           type: Object,
         },
@@ -95,6 +96,7 @@
           response: { // response object
             type: Object,
             notify: true,
+            reflectToAttribute: true,
             readonly: true,
       } , 
         queryResult: {
@@ -105,27 +107,34 @@
       ready: function(){
         d3function(this.$.example1);
       },
-      fetchData: function(){
-        var queryRequest = this.$.fetch.generateRequest();
+      // fetchData: function(){
+      //   var queryRequest = this.$.fetch.generateRequest();
 
-        Promise.all([queryRequest.completes])
-        .then(function(requests){
-          var queryResult = requests[0].response;
+      //   Promise.all([queryRequest.completes])
+      //   .then(function(requests){
+      //     var queryResult = requests[0].response;
 
-          console.log("queryResult");
-        })
-      },
+      //     console.log("queryResult");
+      //   })
+      // },
     
+      cubismClick: function(){
+        this.handleQuery();
+        // console.log(this.queryResult.results); 
+      },
       
       handleQuery: function(){
+        // var temp;
         this.$.query2.query = 'select value from "W631-ESP-PO.Average_Amps" where time > now() - 1h order by time desc'
         this.$.query2.handleQuery().completes.then(function(data){
-          console.log(data.response)
+          this.queryResult = data.response;
+          for (i=0; i<this.queryResult.results[0].series[0].values.length; i++){
+            console.log(this.queryResult.results[0].series[0].values[i]);
+        }
+          
         })
-        
-
-      }
+      },
     });
-        
+    
   </script>
 </dom-module>

@@ -10,6 +10,7 @@
 		 id='ajax'
 		 url$="[[connection.url]]"
 		 handle-as="json"
+		 
 		 last-response="{{response}}"></iron-ajax>
 
 </template>
@@ -32,6 +33,7 @@
 	      	response: { // response object
 						type: Object,
 						notify: true,
+						reflectToAttribute: true,
 						readonly: true,
 			}      
 		},

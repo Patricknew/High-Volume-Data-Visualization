@@ -20,7 +20,6 @@
     <influxdb-connection connection="{{connection}}"></influxdb-connection>
     <br/>
    
-    <br/>
     <paper-button id="execute" raised>Show Wells</paper-button>
     <!-- <well-names id="wellNames" connection="[[connection]]" result="{{wellNames}}"></well-names>  -->
     <nimbus-influxdb-filter id="wellNames" connection="[[connection]]" result="{{selectedWells}}"
@@ -33,7 +32,7 @@
      query='SHOW MEASUREMENTS WITH MEASUREMENT =~ /(W631-ESP-PO)\./' regex=/.*\.(.*$)/></nimbus-influxdb-filter>
      [[measurementNames]]
     <br/>
-    <br/>
+
 <!--     <paper-button id="showCubism" raised>Show Cubism</paper-button> -->
     <cubism-chart wells="[[selectedWells]]" measurements="[[measurementNames]]" connection="[[connection]]"></cubism-chart>
   </template>
