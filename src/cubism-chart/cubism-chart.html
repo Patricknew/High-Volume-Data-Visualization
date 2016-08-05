@@ -17,80 +17,59 @@
       ></influxdb-query>
      
     <paper-button id="showCubism" raised>Show Cubism</paper-button>
-
-  </div>
-
-</template>
-<script>
-
-    d3function = function(el) {
-      // //Generate Random Data
-      // function random(name) {
-      //   var value = 0,
-      //       values = [],
-      //       i = 0,
-      //       last;
-      //   return context.metric(function(start, stop, step, callback) {
-      //     start = +start, stop = +stop;
-      //     if (isNaN(last)) last = start;
-      //     while (last < stop) {
-      //       last += step;
-      //       value = Math.max(-10, Math.min(10, value + .8 * Math.random() - .4 + .2 * Math.cos(i += .2)));
-      //       values.push(value);
-      //     }
-      //     callback(null, values = values.slice((start - stop) / step));
-      //   }, name);
-      // }
-
+    <script type="text/javascript">
       var context = cubism.context()
           .serverDelay(0)
           .clientDelay(0)
           .step(1e3)
           .size(960);
+    </script>
+  </div>
+
+</template>
+<script>
+
+    d3function = function(el, dataResponse, well, measurement) {
+
+      // var context = cubism.context()
+      //     .serverDelay(0)
+      //     .clientDelay(0)
+      //     .step(1e3)
+      //     .size(960);
 
       var test = formatData();
-
       function formatData(){
         return context.metric(function(start, stop, step, callback){
         //start time (a Date), stop time (another Date), step interval ( a number in milliseconds), callback
           start = +start;
-          stop = +stop; //stop time (another Date)
+          stop = +stop;
           var values = [];
           while (start < stop) {
             start += step;
-            values.push(this.queryResult.results[0].series[0].values[i][1]);
+            for (i=0; i<dataResponse.results[0].series[0].values.length; i++) {
+            values.push(dataResponse.results[0].series[0].values[i][1]);
+          }
           }
           callback(null,values);
         }, name);
       };
 
       d3.select(el).call(function(div){
-        div.append("div").attr("class", "axis").call(context.axis().orient("top"));
-        div.selectAll(".horizon").data([test]).enter().append("div").attr("class","comparison").call(context.horizon().height(60).title("W631-ESP-PO.Average_Amps"));
-        div.append("div").attr("class", "rule").call(context.rule());
+        div.append("div")
+          .attr("class", "axis")
+          .call(context.axis()
+            .orient("top"));
+        div.selectAll(".horizon")
+          .data([test])
+          .enter().append("div")
+          .attr("class","comparison")
+          .call(context.horizon()
+          .height(60).title(well + ' ' + measurement));
+        div.append("div")
+          .attr("class", "rule")
+          .call(context.rule());
       });
-      // Random Data
-      // var foo = random("foo"),
-      // bar = random("bar");
-      // console.log(foo);
-      // console.log(bar);
-    //   d3.select(el).call(function(div) {
 
-    //     div.append("div")
-    //         .attr("class", "axis")
-    //         .call(context.axis().orient("top"));
-
-    //     div.selectAll(".horizon")
-    //         .data([foo, bar])
-    //       .enter().append("div")
-    //         .attr("class", "horizon")
-    //         .call(context.horizon().extent([-20, 20]));
-
-    //     div.append("div")
-    //         .attr("class", "rule")
-    //         .call(context.rule());
-
-    //   });
     };
 
     Polymer({
@@ -103,7 +82,7 @@
 
       properties: {
         connection: Object,
-        abc: Object,
+
       	data: {
           type: Object,
         },
@@ -113,48 +92,62 @@
         measurements:{
           type: Array,
         },
-          response: { // response object
-            type: Object,
-            notify: true,
-            reflectToAttribute: true,
-            readonly: true,
-      } , 
+        response: { // response object
+          type: Object,
+          notify: true,
+          reflectToAttribute: true,
+          readonly: true,
+        } , 
         queryResult: {
             type: Object,
-            value: function(){ return "{results: [{series: [{values: [0, 0]}]}]}"},
         }
       },
-
-      ready: function(){
-        d3function(this.$.example1);
-      },
-      // fetchData: function(){
-      //   var queryRequest = this.$.fetch.generateRequest();
-
-      //   Promise.all([queryRequest.completes])
-      //   .then(function(requests){
-      //     var queryResult = requests[0].response;
-
-      //     console.log("queryResult");
-      //   })
-      // },
     
       cubismClick: function(){
         this.handleQuery();
-        // console.log(this.queryResult.results); 
+        // console.log(this.measurements);
       },
       
       handleQuery: function(){
-        // var temp;
-        this.$.query2.query = 'select value from "W631-ESP-PO.Average_Amps" where time > now() - 1h order by time desc'
-        this.$.query2.handleQuery().completes.then(function(data){
-          this.queryResult = data.response;
+        for (i=0; i<this.wells.length; i++){
+          // console.log(well.length);
+          for (j=0; j<this.measurements.length; j++){
+            this.$.query2.query='select value from "' + this.wells[i] + '.' + this.measurements[j] + '" where time > now() - 1h order by time desc'
+            console.log("1");
+            // this.$.query2.query = 'select value from "W631-ESP-PO.Average_Amps" where time > now() - 1h order by time desc'
+            var well = this.wells[i];
+            var measurement = this.measurements[j];
+            this.handleResponse(well, measurement);
+
+        //     this.$.query2.handleQuery().completes.then(function(data){
+        //       this.queryResult = data.response;
+
+        //       console.log(well);
+        //       d3function(test, data.response, well, measurement);
+        //   // this.handleResponse(data);
+        //   // d3function(this.$$.example1);
+
+        //   // for (i=0; i<this.queryResult.results[0].series[0].values.length; i++){
+        //   //   console.log(this.queryResult.results[0].series[0].values[i]);
+        //   // }
+        // })
+      }}},
+
+      handleResponse: function(well, measurement) {
+            var test = this.$.example1;
+            console.log("2");
+            this.$.query2.handleQuery().completes.then(function(data){
+              this.queryResult = data.response;
+
+              d3function(test, data.response, well, measurement);
+          // this.handleResponse(data);
+          // d3function(this.$$.example1);
+
           // for (i=0; i<this.queryResult.results[0].series[0].values.length; i++){
           //   console.log(this.queryResult.results[0].series[0].values[i]);
           // }
-          console.log(this.queryResult);
         })
-      },
+      }
     });
     
   </script>
