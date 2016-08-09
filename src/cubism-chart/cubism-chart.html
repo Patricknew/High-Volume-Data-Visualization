@@ -22,7 +22,8 @@
           .serverDelay(0)
           .clientDelay(0)
           .step(1e3)
-          .size(960);
+          .size(960),
+          horizon = context.horizon();
     </script>
   </div>
 
@@ -30,6 +31,10 @@
 <script>
 
     d3function = function(el, dataResponse, well, measurement) {
+      d3.select(el)
+        .selectAll(".horizon")
+        .call(horizon.remove)
+        .remove();
 
       // var context = cubism.context()
       //     .serverDelay(0)
@@ -64,7 +69,7 @@
           .enter().append("div")
           .attr("class","comparison")
           .call(context.horizon()
-          .height(60).title(well + ' ' + measurement));
+          .height(60).title(well + ' ' + measurement + ': '));
         div.append("div")
           .attr("class", "rule")
           .call(context.rule());
@@ -105,7 +110,13 @@
     
       cubismClick: function(){
         this.handleQuery();
-        // console.log(this.measurements);
+        d3.select(this.$.example1)
+          .selectAll(".comparison")
+          .remove();
+        d3.select(this.$.example1)
+          .selectAll(".axis")
+          .remove();
+        // console.log(this.$.example1);
       },
       
       handleQuery: function(){
@@ -113,7 +124,7 @@
           // console.log(well.length);
           for (j=0; j<this.measurements.length; j++){
             this.$.query2.query='select value from "' + this.wells[i] + '.' + this.measurements[j] + '" where time > now() - 1h order by time desc'
-            console.log("1");
+            // console.log("1");
             // this.$.query2.query = 'select value from "W631-ESP-PO.Average_Amps" where time > now() - 1h order by time desc'
             var well = this.wells[i];
             var measurement = this.measurements[j];
@@ -135,7 +146,7 @@
 
       handleResponse: function(well, measurement) {
             var test = this.$.example1;
-            console.log("2");
+            // console.log("2");
             this.$.query2.handleQuery().completes.then(function(data){
               this.queryResult = data.response;
 

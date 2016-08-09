@@ -1,6 +1,6 @@
 {
-  "name": "cubism-dasboard",
-  "short_name": "cubism-dasboard",
+  "name": "cubism-dashboard",
+  "short_name": "cubism-dashboard",
   "description": "display time series data with cubism",
   "start_url": "/",
   "display": "standalone"

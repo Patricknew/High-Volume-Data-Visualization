@@ -1,5 +1,5 @@
 {
-  "name": "cubism-dasboard",
+  "name": "cubism-dashboard",
   "description": "display time series data with cubism",
   "main": "index.html",
   "dependencies": {
