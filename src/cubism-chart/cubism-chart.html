@@ -1,12 +1,15 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../influxdb-query/influxdb-query.html">
-<script src="../../bower_components/d3/d3.min.js"></script>
-<script src="../../bower_components/cubism/cubism.v1.js"></script>
+<!-- <script src="../../bower_components/d3/d3.min.js"></script>
+<script src="../../bower_components/cubism/cubism.v1.js"></script> -->
+<script src=http://d3js.org/d3.v3.min.js></script>
+<script src=http://square.github.io/cubism/cubism.v1.js></script>
+<link rel = "stylesheet" type="text/css" href = style.css>
 <dom-module id="cubism-chart">
 <template>
 	<style type="text/css">
-		
+    
 	</style>
 
   <div id="example1">
@@ -17,30 +20,24 @@
       ></influxdb-query>
      
     <paper-button id="showCubism" raised>Show Cubism</paper-button>
+    <div id="cubismMsg"></div>
     <script type="text/javascript">
       var context = cubism.context()
-          .serverDelay(0)
-          .clientDelay(0)
+          .serverDelay(15000)
+          .clientDelay(15000)
           .step(1e3)
-          .size(960),
+          .size(1440),
           horizon = context.horizon();
     </script>
   </div>
 
 </template>
 <script>
-
-    d3function = function(el, dataResponse, well, measurement) {
-      d3.select(el)
-        .selectAll(".horizon")
-        .call(horizon.remove)
-        .remove();
-
-      // var context = cubism.context()
-      //     .serverDelay(0)
-      //     .clientDelay(0)
-      //     .step(1e3)
-      //     .size(960);
+    d3function = function(el, em, datapoints, well, measurement) {
+      // d3.select(el)
+      //   .selectAll(".horizon")
+      //   .call(horizon.remove)
+      //   .remove();
 
       var test = formatData();
       function formatData(){
@@ -51,28 +48,41 @@
           var values = [];
           while (start < stop) {
             start += step;
-            for (i=0; i<dataResponse.results[0].series[0].values.length; i++) {
-            values.push(dataResponse.results[0].series[0].values[i][1]);
           }
+          for (i=0; i<datapoints.length; i++) {
+          // for (i=0; i<100; i++) {
+            values.push(datapoints[i][1]);
           }
+          // console.log(values);
           callback(null,values);
         }, name);
       };
 
       d3.select(el).call(function(div){
-        div.append("div")
-          .attr("class", "axis")
-          .call(context.axis()
-            .orient("top"));
+        // div.append("div")
+        //   .attr("class", "axis")
+        //   .call(context.axis()
+        //   .orient("top"));
         div.selectAll(".horizon")
           .data([test])
           .enter().append("div")
           .attr("class","comparison")
           .call(context.horizon()
-          .height(60).title(well + ' ' + measurement + ': '));
+          .height(60).title(well + ' ' + measurement + ': ')
+          // .colors(["#08519c", "#*82bd", "#6baed6", "#fee6ce", "#fdae6b", "#e6550d" ])
+          );
         div.append("div")
           .attr("class", "rule")
-          .call(context.rule());
+          .call(context.rule()
+          );
+
+      });
+      context.on("change", function(start, stop) {
+          d3.select(em)
+          .text("Last updated at " + stop + ".");
+      });      
+      context.on("focus", function(i) {
+        d3.selectAll(".value").style("right", i == null ? null : context.size() - i + "px");
       });
 
     };
@@ -102,28 +112,69 @@
           notify: true,
           reflectToAttribute: true,
           readonly: true,
-        } , 
+        }, 
         queryResult: {
-            type: Object,
-        }
+          type: Object,
+        },
+        timer:{
+          type: Number,
+        },
       },
     
       cubismClick: function(){
-        this.handleQuery();
-        d3.select(this.$.example1)
+        // console.log(this.datapoints);
+        var polymer = this;
+        if (this.timer){
+          clearInterval(this.timer);
+        }
+        polymer.cubismDraw(polymer);
+        this.timer = setInterval(function(){
+          polymer.cubismDraw(polymer);
+        }, 60000);
+
+        // this.cubismDraw();
+
+        // this.handleQuery();
+        // d3.select(this.$.example1)
+        //   .selectAll(".comparison")
+        //   .remove();
+        // d3.select(this.$.example1)
+        //   .selectAll(".axis")
+        //   .remove();
+        // d3.select(this.$.example1)
+        //   .selectAll(".rule")
+        //   .remove();
+      },
+
+      cubismDraw: function(polymer){
+        polymer.handleQuery();
+        d3.select(polymer.$.example1)
           .selectAll(".comparison")
           .remove();
-        d3.select(this.$.example1)
+        d3.select(polymer.$.example1)
           .selectAll(".axis")
           .remove();
-        // console.log(this.$.example1);
+        d3.select(polymer.$.example1)
+          .selectAll(".rule")
+          .remove();
+        d3.select(polymer.$.example1)
+          .selectAll(".axis")
+          .data(["top"])
+          .enter()
+          .append("div")
+          .attr("class", function(d) { return d + " axis"; })
+          .each(function(d) { d3.select(this).call(context.axis().ticks(12).orient(d)); });
       },
       
       handleQuery: function(){
+        var time = new Date();
+        var currentUTC = time.toISOString();
+        time.setDate(time.getDate() - 1);
+        var yesterdayUTC = time.toISOString();
         for (i=0; i<this.wells.length; i++){
           // console.log(well.length);
           for (j=0; j<this.measurements.length; j++){
-            this.$.query2.query='select value from "' + this.wells[i] + '.' + this.measurements[j] + '" where time > now() - 1h order by time desc'
+            this.$.query2.query='select value from "' + this.wells[i] + '.' + this.measurements[j] + '" where time > \'' + yesterdayUTC + '\' and time < \'' + currentUTC + '\'';
             // console.log("1");
             // this.$.query2.query = 'select value from "W631-ESP-PO.Average_Amps" where time > now() - 1h order by time desc'
             var well = this.wells[i];
@@ -145,19 +196,32 @@
       }}},
 
       handleResponse: function(well, measurement) {
-            var test = this.$.example1;
-            // console.log("2");
+            // var test = this.$.example1;
+            var test = this;
+            // console.log(this.datapoints);
+            // var datapoints = this.datapoints;
             this.$.query2.handleQuery().completes.then(function(data){
               this.queryResult = data.response;
-
-              d3function(test, data.response, well, measurement);
-          // this.handleResponse(data);
-          // d3function(this.$$.example1);
+              test.handleData(data.response.results[0].series[0].values, well, measurement);
+              // console.log(data.response);
+              // this.datapoints=data.response.results[0].series[0].values;
+              // this.push('datapoints', data.response.results[0].series[0].values);
+              // console.log(this);
+              // d3function(test, this.datapoints, well, measurement);
 
           // for (i=0; i<this.queryResult.results[0].series[0].values.length; i++){
           //   console.log(this.queryResult.results[0].series[0].values[i]);
           // }
+        }, function(err) {
+          console.log("Promise Failed.");
         })
+      },
+
+      handleData: function(datapoints, well, measurement) {
+        // console.log(datapoints);
+        // this.push('datapoints', datapoints);
+        // console.log(this.datapoints[0]);
+        d3function(this.$.example1,this.$.cubismMsg, datapoints, well, measurement);
       }
     });
     
