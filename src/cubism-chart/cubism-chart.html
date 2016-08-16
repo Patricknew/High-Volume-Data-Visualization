@@ -5,7 +5,7 @@
 <script src="../../bower_components/cubism/cubism.v1.js"></script> -->
 <script src=http://d3js.org/d3.v3.min.js></script>
 <script src=http://square.github.io/cubism/cubism.v1.js></script>
-<link rel = "stylesheet" type="text/css" href = style.css>
+<!-- <link rel = "stylesheet" type="text/css" href = style.css> -->
 <dom-module id="cubism-chart">
 <template>
 	<style type="text/css">
@@ -19,7 +19,9 @@
       connection="[[connection]]"
       ></influxdb-query>
      
-    <paper-button id="showCubism" raised>Show Cubism</paper-button>
+    <paper-button class="button" id="showCubism" raised>Show Cubism</paper-button>
+    </br>
+    </br>
     <div id="cubismMsg"></div>
     <script type="text/javascript">
       var context = cubism.context()
@@ -147,7 +149,6 @@
       },
 
       cubismDraw: function(polymer){
-        polymer.handleQuery();
         d3.select(polymer.$.example1)
           .selectAll(".comparison")
           .remove();
@@ -164,6 +165,7 @@
           .append("div")
           .attr("class", function(d) { return d + " axis"; })
           .each(function(d) { d3.select(this).call(context.axis().ticks(12).orient(d)); });
+        polymer.handleQuery();
       },
       
       handleQuery: function(){

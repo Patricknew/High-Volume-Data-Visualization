@@ -4,19 +4,19 @@
 <dom-module id="influxdb-connection">
 <template>
 	<style type="text/css">
-		
-	</style>
-  
-  <paper-card heading="InfluxDB Connection" image="" elevation="1" animated-shadow="false">
-    <div class="card-content">
-      <paper-input label="Url" value="{{connection.url}}"></paper-input>
-      <paper-input label="User" value="{{connection.user}}"></paper-input>
-      <paper-input label="Password" value="{{connection.password}}" type="password"></paper-input>
-      <paper-input label="Database" value="{{connection.db}}"></paper-input>
 
-    </div>
-  </paper-card>  
-	
+	</style>
+
+  <div class="card">
+    <paper-card heading="InfluxDB Connection" image="" elevation="1" animated-shadow="false">
+
+        <paper-input label="Url" value="{{connection.url}}"></paper-input>
+        <paper-input label="User" value="{{connection.user}}"></paper-input>
+        <paper-input label="Password" value="{{connection.password}}" type="password"></paper-input>
+        <paper-input label="Database" value="{{connection.db}}"></paper-input>
+
+    </paper-card>  
+  </div>	
 </template>
 <script>
 

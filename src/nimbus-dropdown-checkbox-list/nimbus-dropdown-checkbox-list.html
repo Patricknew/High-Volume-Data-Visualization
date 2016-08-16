@@ -30,12 +30,12 @@
 
 <!-- Patrick's checkbox within dropdown menu -->
     <div class="dropdown with checkbox">
-        <paper-dropdown-menu id="dropdownMenu" selected-item-label="[[result]]">
+        <!-- <paper-dropdown-menu id="dropdownMenu" selected-item-label="[[result]]"> -->
             <paper-listbox multi class="dropdown-content">
                 <!-- <paper-item>test</paper-item> -->
                 <nimbus-checkbox-list items="[[items]]" selected-items="{{result}}"></nimbus-checkbox-list>
             </paper-listbox>
-        </paper-dropdown-menu>
+        <!-- </paper-dropdown-menu> -->
     </div>
 
 </template>
@@ -55,11 +55,11 @@
                 }
             }
         },
-        ready: function() {
-            this.$.dropdownMenu.$.menuButton.ignoreSelect = true;
-            this.$.dropdownMenu.$.ignoreSelect = true;
+        // ready: function() {
+        //     this.$.dropdownMenu.$.menuButton.ignoreSelect = true;
+        //     this.$.dropdownMenu.$.ignoreSelect = true;
            
-        },
+        // },
 
     })
 

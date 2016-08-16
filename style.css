@@ -3,6 +3,7 @@ body {
   margin: 30px auto;
   width: 1440px;
   position: relative;
+  text-align: center;
 }
 
 header {
@@ -41,16 +42,6 @@ header {
   background-image: -ms-linear-gradient(top, #fff 0%, rgba(255,255,255,0) 100%);*/
 /*  top: 0px;*/
   padding: 0 0 0 0;
-}
-
-.axis.bottom {
-  background-image: linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
-  background-image: -o-linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
-  background-image: -moz-linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
-  background-image: -webkit-linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
-  background-image: -ms-linear-gradient(bottom, #fff 0%, rgba(255,255,255,0) 100%);
-/*  bottom: 0px;*/
-  padding: 24px 0 0 0;
 }
 
 .horizon {
@@ -92,12 +83,62 @@ header {
 
 .line {
   background: #000;
-  opacity: .2;
-  z-index: 2;
+  /*z-index: 2;*/
 }
 
 @media all and (max-width: 1439px) {
   body { margin: 0px auto; }
   .axis { position: static; }
   .axis.top, .axis.bottom { padding: 0; }
+}
+
+#dashboard {
+  width: 100%;
+  margin: auto;
+  border: 3px solid blue;
+  overflow: auto;
+}
+#dbDiv{
+  /*float: left;*/
+  display: inline-block;
+  width: 33%;
+  margin: 20px 0;
+  justify-content: center;
+}
+#wellDiv {
+  /*margin-left: 20px;*/
+  display: inline-block;
+  width: 33%;
+  position: static;
+  margin: 20px 0;
+  justify-content: center;
+}
+#measurementDiv {
+/*  float: right;*/
+  display: inline-block;
+  width: 33%;
+  position: static;
+  margin: 20px 0;
+  justify-content: center;
+}
+#dbCard, .button {
+    padding: 10px 15px;
+    margin: 20px 0;
+    width: 250px;
+    background-color: #f3f3f3;
+    border: 1px solid #dedede;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    text-align: center;
+/*    vertical-align: top;*/
+}
+
+.collapse{
+  display: table;
+  text-align: left;
+  /*float: center;*/
+  margin: auto;
 }

@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../../bower_components/iron-collapse/iron-collapse.html">
 <link rel="import" href="../influxdb-connection/influxdb-connection.html">
 <link rel="import" href="../influxdb-query/influxdb-query.html">
 <link rel="import" href="../cubism-chart/cubism-chart.html">
@@ -10,30 +11,37 @@
   <template>
     <style>
       :host {
-        display: block;
+        display: inline;
       }
     </style>
     
     <iron-localstorage name="cubism-connection" value="{{connection}}"
         on-iron-localstorage-load-empty="initializeConnection"></iron-localstorage>
+    <div id ="dashboard">
+      <div id="dbDiv">
+      <paper-button id="dbCard" raised>Edit Data Source</paper-button>
+      <iron-collapse id="collapseDb" class="collapse">
+        <influxdb-connection connection="{{connection}}"></influxdb-connection>
+      </iron-collapse>
+      </div>
 
-    <influxdb-connection connection="{{connection}}"></influxdb-connection>
-    <br/>
-   
-    <paper-button id="execute" raised>Show Wells</paper-button>
-    <!-- <well-names id="wellNames" connection="[[connection]]" result="{{wellNames}}"></well-names>  -->
-    <nimbus-influxdb-filter id="wellNames" connection="[[connection]]" result="{{selectedWells}}"
-     query='SHOW MEASUREMENTS' regex=/(.*?)\..*$/></nimbus-influxdb-filter>
-    [[selectedWells]]
-    <br/>
-    <br/>
-    <paper-button id="showMeasurements" raised>Show Measurements</paper-button>
-    <nimbus-influxdb-filter id="measurementNames" connection="[[connection]]" result="{{measurementNames}}"
-     query='SHOW MEASUREMENTS WITH MEASUREMENT =~ /(W631-ESP-PO)\./' regex=/.*\.(.*$)/></nimbus-influxdb-filter>
-     [[measurementNames]]
-    <br/>
+      <div id = "wellDiv">
+      <paper-button class="button" id="execute" raised>Select Wells</paper-button>
+      <iron-collapse id="collapseWell" class="collapse">
+        <nimbus-influxdb-filter id="wellNames" connection="[[connection]]" result="{{selectedWells}}"
+         query='SHOW MEASUREMENTS' regex=/(.*?)\..*$/></nimbus-influxdb-filter>
+      </iron-collapse>
+      </div>
 
-<!--     <paper-button id="showCubism" raised>Show Cubism</paper-button> -->
+      <div id = "measurementDiv">
+      <paper-button class="button" id="showMeasurements" raised>Select Measurements</paper-button>
+      <iron-collapse id="collapseMeasurment" class="collapse">
+        <nimbus-influxdb-filter id="measurementNames" connection="[[connection]]" result="{{measurementNames}}"
+         query='SHOW MEASUREMENTS WITH MEASUREMENT =~ /(W631-ESP-PO)\./' regex=/.*\.(.*$)/></nimbus-influxdb-filter>
+      </iron-collapse>
+      </div>
+    </div>
+
     <cubism-chart wells="[[selectedWells]]" measurements="[[measurementNames]]" connection="[[connection]]"></cubism-chart>
   </template>
 
@@ -45,7 +53,7 @@
       listeners:{
         'execute.click':'executeClick',
         'showMeasurements.click': 'measurementClick',
-        // 'showCubism.click': 'cubismClick',
+        'dbCard.click': 'handleCollapse',
       },
       
       properties: {
@@ -69,16 +77,17 @@
       executeClick: function(){
         //this.$.query.handleQuery()
         this.$.wellNames.handleQuery();
+        this.$.collapseWell.toggle();
         // var well = this.selectedWells;
         // console.log(well);
       },
       measurementClick: function(){
         this.$.measurementNames.handleQuery()
+        this.$.collapseMeasurment.toggle();
       },
-      // cubismClick: function(){
-      //   var well=this.selectedWells;
-      //   console.log(well);
-      // }
+      handleCollapse: function(){
+        this.$.collapseDb.toggle();
+      }
 
     });
   </script>
