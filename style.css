@@ -48,6 +48,7 @@ header {
   border-bottom: solid 1px #000;
   overflow: hidden;
   position: relative;
+  background-color: white;
 }
 
 .horizon {
@@ -79,13 +80,26 @@ header {
 
 .horizon .value {
   right: 0;
+  /*display: none;*/
 }
+
+/*.horizon:hover .value {display: inherit;}*/
 
 .line {
   background: #000;
-  /*z-index: 2;*/
+  z-index: 2;
+/*  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  pointer-events: none;*/
 }
-
+/*.rule {
+    height: 90%;
+    position: static;
+    border-right: 1px dotted #000;
+    text-align: right;
+}*/
 @media all and (max-width: 1439px) {
   body { margin: 0px auto; }
   .axis { position: static; }
@@ -141,4 +155,13 @@ header {
   text-align: left;
   /*float: center;*/
   margin: auto;
+}
+
+.logo{
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  z-index: -1;
+  padding: 0px;
+  margin: 0px;
 }

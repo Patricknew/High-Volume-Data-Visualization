@@ -13,6 +13,9 @@
       :host {
         display: inline;
       }
+      paper-button:hover {
+        background-color: var(--paper-indigo-100);
+      }
     </style>
     
     <iron-localstorage name="cubism-connection" value="{{connection}}"
@@ -75,11 +78,8 @@
       },
 
       executeClick: function(){
-        //this.$.query.handleQuery()
         this.$.wellNames.handleQuery();
         this.$.collapseWell.toggle();
-        // var well = this.selectedWells;
-        // console.log(well);
       },
       measurementClick: function(){
         this.$.measurementNames.handleQuery()

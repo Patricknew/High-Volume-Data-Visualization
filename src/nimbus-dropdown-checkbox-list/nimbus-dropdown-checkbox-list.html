@@ -1,7 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
-<link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../nimbus-checkbox-list/nimbus-checkbox-list.html">
 
 <dom-module id="nimbus-dropdown-checkbox-list">
@@ -28,11 +27,9 @@
 
     </style>  
 
-<!-- Patrick's checkbox within dropdown menu -->
     <div class="dropdown with checkbox">
         <!-- <paper-dropdown-menu id="dropdownMenu" selected-item-label="[[result]]"> -->
             <paper-listbox multi class="dropdown-content">
-                <!-- <paper-item>test</paper-item> -->
                 <nimbus-checkbox-list items="[[items]]" selected-items="{{result}}"></nimbus-checkbox-list>
             </paper-listbox>
         <!-- </paper-dropdown-menu> -->
@@ -55,12 +52,6 @@
                 }
             }
         },
-        // ready: function() {
-        //     this.$.dropdownMenu.$.menuButton.ignoreSelect = true;
-        //     this.$.dropdownMenu.$.ignoreSelect = true;
-           
-        // },
-
     })
 
 </script>
