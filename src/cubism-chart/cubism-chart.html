@@ -19,6 +19,7 @@
       ></influxdb-query>
      
     <paper-button class="button" id="showCubism" raised>Show Cubism</paper-button>
+    <paper-button class="button" id="showComparison" raised>Show Comparison</paper-button>
     </br>
     </br>
     <div id="cubismMsg"></div>
@@ -29,15 +30,17 @@
           // .serverDelay(new Date(2012, 4, 2) - Date.now())
           // .clientDelay(15000)
           .step(1e3)
-          .size(1440),
-          horizon = context.horizon();
+          .size(1440);
+          // horizon = context.horizon(),
+          // comparison = context.comparison();
     </script>
 
 </template>
 <script>
-    d3function = function(el, em, datapoints, well, measurement) {
+    d3function = function(el, em, datapoints, well, measurement, type) {
 
       var test = formatData();
+      var second = test.shift(- 30 * 60 * 1000);
       var color =  ["#66c2a5", "#abdda4", "#fee08b", "#f46d43", "#d53e4f",
                 "#66c2a5", "#abdda4", "#fee08b", "#f46d43", "#d53e4f"] ;
 
@@ -59,20 +62,39 @@
         }, name);
       };
 
-      d3.select('body').append("div")
-        .attr("class","rule")
-        .call(context.rule());
-      d3.select(el).call(function(div){
-        div.selectAll(".horizon")
-          .data([test])
-          .enter().append("div")
-          .attr("class","comparison")
-          .call(context.horizon()
-          .height(60)
-          .title(well + ' ' + measurement + ': ')
-          .colors(color)
-          );
-      });
+      if (type == "horizon") {
+        d3.select('body').append("div")
+          .attr("class","rule")
+          .call(context.rule());
+        d3.select(el).call(function(div){
+          div.selectAll(".horizon")
+            .data([test])
+            .enter().append("div")
+            .attr("class","comparison")
+            .call(context.horizon()
+            .height(60)
+            .format(d3.format(".2f"))
+            .title(well + ' ' + measurement + ': ')
+            .colors(color)
+            );
+        });
+      } 
+      else  if (type == "comparison") {
+        d3.select('body').append("div")
+          .attr("class","rule")
+          .call(context.rule());
+        d3.select(el).call(function(div){
+          div.selectAll(".comparison")
+            .data([[test, second]])
+            .enter().append("div")
+            .attr("class","comparison")
+            .call(context.comparison()
+            .height(60)
+            .title(well + ' ' + measurement + ' comparison: ')
+            .colors(color)
+            );
+        });
+      }
 
       context.on("change", function(start, stop) {
           d3.select(em)
@@ -81,6 +103,7 @@
       context.on("focus", function(i) {
         d3.selectAll(".value").style("right", i == null ? null : context.size() - i + "px");
       });
+    
     };
 
     Polymer({
@@ -89,6 +112,7 @@
 
       listeners:{
         'showCubism.click': 'cubismClick',
+        'showComparison.click': 'comparisonClick',
       },
 
       properties: {
@@ -119,16 +143,30 @@
     
       cubismClick: function(){
         var polymer = this;
+        var type = "horizon";
         if (this.timer){
           clearInterval(this.timer);
         }
-        polymer.cubismDraw(polymer);
+        polymer.cubismDraw(polymer, type);
         this.timer = setInterval(function(){
-          polymer.cubismDraw(polymer);
+          polymer.cubismDraw(polymer, type);
         }, 60000);
       },
-
-      cubismDraw: function(polymer){
+      comparisonClick: function(){
+        var polymer = this;
+        var type = "comparison";
+        if (this.timer){
+          clearInterval(this.timer);
+        }
+        polymer.cubismDraw(polymer, type);
+        this.timer = setInterval(function(){
+          polymer.cubismDraw(polymer, type);
+        }, 60000);
+      },
+      cubismDraw: function(polymer, type){
+        d3.select(polymer.$.example1)
+          .selectAll(".horizon")
+          .remove();        
         d3.select(polymer.$.example1)
           .selectAll(".comparison")
           .remove();
@@ -138,17 +176,22 @@
         d3.select(polymer.$.example1)
           .selectAll(".rule")
           .remove();
+        // d3.select(polymer.$.example1)
+        //   .selectAll(".axis")
+        //   .data(["top"])
+        //   .enter()
+        //   .append("div")
+        //   .attr("class", function(d) { return d + " axis"; })
+        //   .each(function(d) { d3.select(this).call(context.axis().ticks(12).orient(d)); });
         d3.select(polymer.$.example1)
-          .selectAll(".axis")
-          .data(["top"])
-          .enter()
           .append("div")
-          .attr("class", function(d) { return d + " axis"; })
+          .attr("class", "axis")
+          // .call(context.axis().orient("top"));
           .each(function(d) { d3.select(this).call(context.axis().ticks(12).orient(d)); });
-        polymer.handleQuery();
+        polymer.handleQuery(type);
       },
       
-      handleQuery: function(){
+      handleQuery: function(type){
         var time = new Date();
         var currentUTC = time.toISOString();
         time.setDate(time.getDate() - 1);
@@ -158,21 +201,21 @@
             this.$.query2.query='select value from "' + this.wells[i] + '.' + this.measurements[j] + '" where time > \'' + yesterdayUTC + '\' and time < \'' + currentUTC + '\'';
             var well = this.wells[i];
             var measurement = this.measurements[j];
-            this.handleResponse(well, measurement);
+            this.handleResponse(well, measurement, type);
       }}},
 
-      handleResponse: function(well, measurement) {
+      handleResponse: function(well, measurement, type) {
             var test = this;
             this.$.query2.handleQuery().completes.then(function(data){
               this.queryResult = data.response;
-              test.handleData(data.response.results[0].series[0].values, well, measurement);
+              test.handleData(data.response.results[0].series[0].values, well, measurement, type);
         }, function(err) {
           console.log("Promise Failed.");
         })
       },
 
-      handleData: function(datapoints, well, measurement) {
-        d3function(this.$.example1,this.$.cubismMsg, datapoints, well, measurement);
+      handleData: function(datapoints, well, measurement, type) {
+        d3function(this.$.example1,this.$.cubismMsg, datapoints, well, measurement, type);
       }
     });
     
